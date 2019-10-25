@@ -113,4 +113,5 @@ void gravar(int porta, unsigned int fre, unsigned int timerNota, unsigned int ti
   a[aux][1] = fre;
   a[aux][2] = timerNota;
   a[aux][3] = timerP;
+  aux++;
 }
