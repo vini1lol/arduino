@@ -1,4 +1,4 @@
-#include <WiFi.h>
+#include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 
 //WiFi
@@ -9,6 +9,7 @@ WiFiClient wifiClient;
 //MQTT Server
 const char* BROKER_MQTT = "test.mosquitto.org"; //URL do broker MQTT que se deseja utilizar
 int BROKER_PORT = 1883;                      // Porta do Broker MQTT
+
 
 #define ID_MQTT  "padiohnk4654121564"            //Informe um ID unico e seu. Caso sejam usados IDs repetidos a ultima conexão irá sobrepor a anterior. 
 #define TOPIC_PUBLISH "pp"    //Informe um Tópico único. Caso sejam usados tópicos em duplicidade, o último irá eliminar o anterior.
@@ -30,10 +31,13 @@ void setup() {
   conectaWiFi();
   MQTT.setServer(BROKER_MQTT, BROKER_PORT);
   MQTT.setCallback(callback);
+  mantemConexoes();
+  mantemConexoes();
+  MQTT.subscribe("pp");
 }
 
 void loop() {
-  mantemConexoes();
+  //mantemConexoes();
   //enviaValores();
   MQTT.loop();
 }
@@ -77,6 +81,7 @@ void conectaMQTT() {
     Serial.println(BROKER_MQTT);
     if (MQTT.connect(ID_MQTT)) {
       Serial.println("Conectado ao Broker com sucesso!");
+      
     }
     else {
       Serial.println("Não foi possivel se conectar ao broker.");
