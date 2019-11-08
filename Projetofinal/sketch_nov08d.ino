@@ -3,10 +3,8 @@
  
 const char* ssid = "Leonardo";
 const char* password =  "12345678";
-const char* mqttServer = "mqtt.flespi.io";
+const char* mqttServer = "test.mosquitto.org";
 const int mqttPort = 1883;
-const char* mqttUser = "FlespiToken vd4VcscgPGf9iUvUSKPuXWOCJi0O7iStjMek4gqIKvHTe0DUAgcl3QOAWCdUKVdS";
-const char* mqttPassword = "12345678";
  
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -29,7 +27,7 @@ void setup() {
   while (!client.connected()) {
     Serial.println("Connecting to MQTT...");
  
-    if (client.connect("ESP8266Client", mqttUser, mqttPassword )) {
+    if (client.connect("ESP8266Client")) {
  
       Serial.println("connected");  
  
@@ -42,8 +40,8 @@ void setup() {
     }
   }
  
-  client.publish("test", "Hello from ESP8266");
-  client.subscribe("test");
+  client.publish("pp", "Hello from ESP8266");
+  client.subscribe("pp");
  
 }
  
