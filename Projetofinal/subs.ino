@@ -22,8 +22,7 @@ void conectaMQTT();     //Faz conexão com Broker MQTT
 void enviaPacote();     //
 
 
-char json[] = "{\"sensor\":\"gps\",\"time\":1351824120,\"data\":[48.756080,2.302038]}";
-
+String json[] = {"casa","12"};
 
 void setup() {
   Serial.begin(9600);
@@ -34,6 +33,7 @@ void setup() {
   mantemConexoes();
   mantemConexoes();
   MQTT.subscribe("pp");
+  json[0]="cas";
 }
 
 void loop() {
@@ -91,18 +91,18 @@ void conectaMQTT() {
   }
 }
 
-void enviaValores() {
-  Serial.println("  ### Envia valores");
-  String ADCData;
-  int adcvalue = analogRead(0); //Read Analog value of LDR
-  ADCData = String(adcvalue);   //String to interger conversion
-  Serial.println("value: " + ADCData);
-  const char* dados = ADCData.c_str();
-  MQTT.publish(TOPIC_PUBLISH, dados);
-  delay(5000);  //GET Data at every 5 seconds
-  MQTT.publish(TOPIC_PUBLISH, json);
-  delay(5000);
-}
+//void enviaValores() {
+//  Serial.println("  ### Envia valores");
+//  String ADCData;
+//  int adcvalue = analogRead(0); //Read Analog value of LDR
+//  ADCData = String(adcvalue);   //String to interger conversion
+//  Serial.println("value: " + ADCData);
+//  const char* dados = ADCData.c_str();
+//  MQTT.publish(TOPIC_PUBLISH, dados);
+//  delay(5000);  //GET Data at every 5 seconds
+//  MQTT.publish(TOPIC_PUBLISH, json);
+//  delay(5000);
+//}
 
 void callback(char* topic, byte*message, unsigned int length) {
   
@@ -116,4 +116,17 @@ void callback(char* topic, byte*message, unsigned int length) {
     messageTemp += (char)message[i];
   }
   Serial.println();
+  Serial.println(messageTemp);
+  Serial.println();
+  String a = messageTemp.substring(messageTemp.indexOf(":"));
 }
+String makestr(String t){
+  String ret;
+  ret = "LDR1:"+ t[0];
+  ret+= "LDR2:"+t[1];
+  Serial.println(ret);
+  return ret;
+}
+
+
+
