@@ -2,14 +2,17 @@
 #include <PubSubClient.h>
 
 //WiFi
-const char* SSID = "Leonardo";                // SSID / nome da rede WiFi que deseja se conectar
-const char* PASSWORD = "12345678";   // Senha da rede WiFi que deseja se conectar
+const char* SSID = "LUIZANTONIO_2GHz";                // SSID / nome da rede WiFi que deseja se conectar
+const char* PASSWORD = "andrea1130";   // Senha da rede WiFi que deseja se conectar
 WiFiClient wifiClient;
 
 //MQTT Server
 const char* BROKER_MQTT = "test.mosquitto.org"; //URL do broker MQTT que se deseja utilizar
 int BROKER_PORT = 1883;                      // Porta do Broker MQTT
 
+//Som
+int s1 = D5;
+int s2 = D6;
 
 #define ID_MQTT  "padiohnk4654121564"            //Informe um ID unico e seu. Caso sejam usados IDs repetidos a ultima conexão irá sobrepor a anterior. 
 #define TOPIC_PUBLISH "pp"    //Informe um Tópico único. Caso sejam usados tópicos em duplicidade, o último irá eliminar o anterior.
@@ -26,7 +29,9 @@ String json[] = {"casa","12"};
 
 void setup() {
   Serial.begin(9600);
-
+  pinMode(s1,OUTPUT);
+  pinMode(s2,OUTPUT);
+  
   conectaWiFi();
   MQTT.setServer(BROKER_MQTT, BROKER_PORT);
   MQTT.setCallback(callback);
@@ -37,8 +42,6 @@ void setup() {
 }
 
 void loop() {
-  //mantemConexoes();
-  //enviaValores();
   MQTT.loop();
 }
 
@@ -91,18 +94,7 @@ void conectaMQTT() {
   }
 }
 
-//void enviaValores() {
-//  Serial.println("  ### Envia valores");
-//  String ADCData;
-//  int adcvalue = analogRead(0); //Read Analog value of LDR
-//  ADCData = String(adcvalue);   //String to interger conversion
-//  Serial.println("value: " + ADCData);
-//  const char* dados = ADCData.c_str();
-//  MQTT.publish(TOPIC_PUBLISH, dados);
-//  delay(5000);  //GET Data at every 5 seconds
-//  MQTT.publish(TOPIC_PUBLISH, json);
-//  delay(5000);
-//}
+
 
 void callback(char* topic, byte*message, unsigned int length) {
   
@@ -118,14 +110,40 @@ void callback(char* topic, byte*message, unsigned int length) {
   Serial.println();
   Serial.println(messageTemp);
   Serial.println();
-  String a = messageTemp.substring(messageTemp.indexOf(":"));
+  String a = messageTemp.substring(messageTemp.indexOf(":")+1);
+  String ldr1 = a.substring(0,a.indexOf(","));
+  Serial.println(a);
+  Serial.print("LDR1: ");
+  Serial.println(ldr1);
+  a = a.substring(a.indexOf(":")+1);
+  String f1 = a.substring(0,a.indexOf(","));
+  a = a.substring(a.indexOf(":")+1);
+  String ldr2 = a.substring(0,a.indexOf(","));
+  Serial.print("LDR2: ");
+  Serial.println(ldr2);
+  a = a.substring(a.indexOf(":")+1);
+  String f2 = a.substring(0,a.indexOf(","));
+  int ff1 = f1.toInt();
+  int ff2 = f2.toInt();
+  exc(ldr1,ldr2,ff1,ff2);
 }
 String makestr(String t){
   String ret;
   ret = "LDR1:"+ t[0];
-  ret+= "LDR2:"+t[1];
+  ret+= ",LDR2:"+t[1];
   Serial.println(ret);
   return ret;
+}
+void exc(String l1,String l2,int f1,int f2){
+    if(l1=="on"){
+      Serial.println("on1");
+      tone(s1,f1,1000);
+      }
+     if(l2=="on"){
+      Serial.println("on2");
+      tone(s2,f2,1000);
+      }
+  
 }
 
 
