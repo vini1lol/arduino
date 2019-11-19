@@ -2,8 +2,8 @@
 #include <PubSubClient.h>
 
 //WiFi
-const char* SSID = "LUIZANTONIO_2GHz";                // SSID / nome da rede WiFi que deseja se conectar
-const char* PASSWORD = "andrea1130";   // Senha da rede WiFi que deseja se conectar
+const char* SSID = "Leonardo";                // SSID / nome da rede WiFi que deseja se conectar
+const char* PASSWORD = "12345678";   // Senha da rede WiFi que deseja se conectar
 WiFiClient wifiClient;
 
 //MQTT Server
@@ -116,16 +116,15 @@ void callback(char* topic, byte*message, unsigned int length) {
   Serial.print("LDR1: ");
   Serial.println(ldr1);
   a = a.substring(a.indexOf(":")+1);
-  String f1 = a.substring(0,a.indexOf(","));
-  a = a.substring(a.indexOf(":")+1);
   String ldr2 = a.substring(0,a.indexOf(","));
   Serial.print("LDR2: ");
   Serial.println(ldr2);
   a = a.substring(a.indexOf(":")+1);
-  String f2 = a.substring(0,a.indexOf(","));
-  int ff1 = f1.toInt();
-  int ff2 = f2.toInt();
-  exc(ldr1,ldr2,ff1,ff2);
+  String mult = a.substring(0,a.indexOf("."));
+  int f1 = 200, f2=500;
+  f1 = f1*mult.toInt();
+  f2 = f2*mult.toInt();
+  exc(ldr1,ldr2,f1,f2);
 }
 String makestr(String t){
   String ret;

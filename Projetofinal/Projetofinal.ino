@@ -1,11 +1,16 @@
 int L1 = 10;
 int L2 = 8;
+//Sensor de luminosidade LDR
 int lr1 = A2;
 int lr2 = A1;
+//potenciometro 
 int pot = A4;
+//armazenamento de notas
 int a[100][4];
 int aux = 0;
+//botão
 int but = 5;
+//Som
 int caixa1 = 6;
 int caixa2 = 9;
 void setup() {
@@ -18,6 +23,7 @@ void setup() {
   pinMode(caixa2, OUTPUT);
   Serial.begin(9600);
 }
+// variaveis auxiliares
 int luz1, luz2, p, estado = 0;
 unsigned int ton;
 int estadoluz1 = 0, estadoluz2 = 0;
@@ -89,6 +95,7 @@ void loop() {
     }
   }
 }
+// maquina de estados do butão
 bool butL() {
   if (estado == 0 && !digitalRead(but)) {
     delay(200);
@@ -108,6 +115,7 @@ bool butL() {
   }
 }
 
+// tentativa de implemenação do gravar
 void gravar(int porta, unsigned int fre, unsigned int timerNota, unsigned int timerP ) {
   a[aux][0] = porta;
   a[aux][1] = fre;
