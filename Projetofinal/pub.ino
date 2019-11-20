@@ -1,11 +1,11 @@
-#include <ESP8266WiFi.h> 
+#include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 
 //WiFi
 const char* SSID = "Leonardo";                // SSID / nome da rede WiFi que deseja se conectar
 const char* PASSWORD = "12345678";   // Senha da rede WiFi que deseja se conectar
-WiFiClient wifiClient;                        
- 
+WiFiClient wifiClient;
+
 //MQTT Server
 const char* BROKER_MQTT = "test.mosquitto.org"; //URL do broker MQTT que se deseja utilizar
 int BROKER_PORT = 1883;                      // Porta do Broker MQTT
@@ -21,79 +21,116 @@ void conectaMQTT();     //Faz conexão com Broker MQTT
 void enviaPacote();     //
 
 
-char json[]= "{\"sensor\":\"gps\",\"time\":1351824120,\"data\":[48.756080,2.302038]}";
-
+String json[] = {"off", "off", "1"};
+//Sensor de luminosidade LDR
+int lr1 = D2;
+int lr2 = D1;
+//potenciometro
+int pot = D4;
 
 void setup() {
+  pinMode(lr1, INPUT);
+  pinMode(lr2, INPUT);
+  pinMode(pot, INPUT);
   Serial.begin(9600);
-  
-  conectaWiFi();
-  MQTT.setServer(BROKER_MQTT, BROKER_PORT);   
-}
 
-void loop() {
+  conectaWiFi();
+  MQTT.setServer(BROKER_MQTT, BROKER_PORT);
   mantemConexoes();
+  mantemConexoes();
+}
+int luz1, luz2, p, estado = 0;
+unsigned int ton;
+int estadoluz1 = 0, estadoluz2 = 0;
+String res;
+void loop() {
+  p = analogRead(pot);
+  p = map(p, 0, 4096, 1, 8);
+  //  Serial.print("pot = ");
+  //  Serial.println(p);
+
+  json[2] = "" + p;
+  luz1 = analogRead(lr1);
+  if (luz1 > 960) {
+    json[0] = "on";
+    estadoluz1 = 1;
+  } else if (estadoluz1 == 1) {
+    json[0] = "off";
+    estadoluz1 = 0;
+  }
+  luz2 = analogRead(lr2);
+  if (luz2 > 900) {
+    json[1] = "on";
+    estadoluz2 = 1;
+  } else if (estadoluz2 == 1) {
+    json[1] = "off";
+    estadoluz2 = 0;
+  }
+
+  makestr();
+
+  //mqtt
   enviaValores();
   MQTT.loop();
 }
-
+void makestr() {
+  res = "LDR1:" + json[0];
+  res += ",LDR2" + json[1];
+  res += ",mult:" + json[2];
+  res += ".";
+}
 void mantemConexoes() {
-   if (!MQTT.connected()) {
-       conectaMQTT(); 
-    }
-    
-    conectaWiFi(); //se não há conexão com o WiFI, a conexão é refeita
+  if (!MQTT.connected()) {
+    conectaMQTT();
+  }
+
+  conectaWiFi(); //se não há conexão com o WiFI, a conexão é refeita
 }
 
 void conectaWiFi() {
 
   if (WiFi.status() == WL_CONNECTED) {
-     return;
+    return;
   }
-        
+
   Serial.print("Conectando-se na rede: ");
   Serial.print(SSID);
   Serial.println("  Aguarde!");
 
-  WiFi.begin(SSID, PASSWORD); // Conecta na rede WI-FI  
-  //WiFi.begin(SSID); // Conecta na rede WI-FI  
-  
+  WiFi.begin(SSID, PASSWORD); // Conecta na rede WI-FI
+  //WiFi.begin(SSID); // Conecta na rede WI-FI
+
   while (WiFi.status() != WL_CONNECTED) {
-      delay(100);
-      Serial.print(".");
+    delay(100);
+    Serial.print(".");
   }
-  
+
   Serial.println();
   Serial.print("Conectado com sucesso, na rede: ");
-  Serial.print(SSID);  
+  Serial.print(SSID);
   Serial.print("  IP obtido: ");
-  Serial.println(WiFi.localIP()); 
+  Serial.println(WiFi.localIP());
 }
 
-void conectaMQTT() { 
-    while (!MQTT.connected()) {
-        Serial.print("Conectando ao Broker MQTT: ");
-        Serial.println(BROKER_MQTT);
-        if (MQTT.connect(ID_MQTT)) {
-            Serial.println("Conectado ao Broker com sucesso!");
-        } 
-        else {
-            Serial.println("Noo foi possivel se conectar ao broker.");
-            Serial.println("Nova tentatica de conexao em 10s");
-            delay(10000);
-        }
+void conectaMQTT() {
+  while (!MQTT.connected()) {
+    Serial.print("Conectando ao Broker MQTT: ");
+    Serial.println(BROKER_MQTT);
+    if (MQTT.connect(ID_MQTT)) {
+      Serial.println("Conectado ao Broker com sucesso!");
     }
+    else {
+      Serial.println("Noo foi possivel se conectar ao broker.");
+      Serial.println("Nova tentatica de conexao em 10s");
+      delay(10000);
+    }
+  }
 }
 
 void enviaValores() {
   Serial.println("  ### Envia valores");
-  String ADCData;
-  int adcvalue=analogRead(0);  //Read Analog value of LDR
-  ADCData = String(adcvalue);   //String to interger conversion
-  Serial.println("value: "+ADCData);
-  const char* dados = ADCData.c_str();
-  MQTT.publish(TOPIC_PUBLISH, dados);
-  delay(5000);  //GET Data at every 5 seconds
-  MQTT.publish(TOPIC_PUBLISH, json);
-  delay(5000);
+  MQTT.publish(TOPIC_PUBLISH, res.c_str());
+  delay(1000);
 }
+
+
