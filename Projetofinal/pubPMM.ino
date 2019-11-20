@@ -1,9 +1,9 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 //pinos sensores
-int lr1 = 27;
-int lr2 = 26;
-int pot = 25;
+int lr1 = 34;
+int lr2 = 32;
+int pot = 33;
 int a[100][4];
 int aux = 0;
 
@@ -41,12 +41,12 @@ int luz1, luz2, p;
 
 void loop() {
   
- mantemConexoes();
- enviaValores();
+mantemConexoes();
+
+enviaValores();
  MQTT.loop();
    
 }
-
 void mantemConexoes() {
   if (!MQTT.connected()) {
     conectaMQTT();
@@ -104,21 +104,21 @@ String conversor() {
   Serial.print(" ");
   Serial.print(luz2);
   Serial.print(" ");
-  if (luz1 > 40)
+  if (luz1 > 200)
   {
     v1 = "on";
     v2 = "off";
   }
-  if (luz2 > 40) {
+  if (luz2 > 200) {
     v1 = "off";
     v2 = "on";
   }
 
-  if (luz2 > 40 && luz1 > 40) {
+  if (luz2 > 200 && luz1 > 200) {
     v1 = "on";
     v2 = "on";
   }
-  if (luz2 < 40 && luz1 < 40) {
+  if (luz2 < 200 && luz1 < 200) {
     v1 = "off";
     v2 = "off";
   }
@@ -135,12 +135,12 @@ String conversor() {
  
 void enviaValores() {
 String msg=conversor();
-  //const char* dados = msg.c_str();
+  const char* dados = msg.c_str();
   Serial.println(msg);
  
  
   delay(300);
-//MQTT.publish(TOPIC_PUBLISH, dados);
+MQTT.publish(TOPIC_PUBLISH, dados);
 delay(300);
  
 }
