@@ -8,7 +8,7 @@ int a[100][4];
 int aux = 0;
 
 //WiFi
-const char* SSID = "Leonardo";                // SSID / nome da rede WiFi que deseja se conectar
+const char* SSID = "Leonardo";// SSID / nome da rede WiFi que deseja se conectar
 const char* PASSWORD = "12345678";   // Senha da rede WiFi que deseja se conectar
 WiFiClient wifiClient;
 
@@ -16,9 +16,9 @@ WiFiClient wifiClient;
 const char* BROKER_MQTT = "test.mosquitto.org"; //URL do broker MQTT que se deseja utilizar
 int BROKER_PORT = 1883;                      // Porta do Broker MQTT
 
-#define ID_MQTT  "ppsadiohnk"            //Informe um ID unico e seu. Caso sejam usados IDs repetidos a ultima conexão irá sobrepor a anterior. 
+#define ID_MQTT  "ppsadiohnk"//Informe um ID unico e seu. Caso sejam usados IDs repetidos a ultima conexão irá sobrepor a anterior. 
 #define TOPIC_PUBLISH "pp"    //Informe um Tópico único. Caso sejam usados tópicos em duplicidade, o último irá eliminar o anterior.
-PubSubClient MQTT(wifiClient);        // Instancia o Cliente MQTT passando o objeto espClient
+PubSubClient MQTT(wifiClient);// Instancia o Cliente MQTT passando o objeto espClient
 
 //Declaração das Funções
 void mantemConexoes();  //Garante que as conexoes com WiFi e MQTT Broker se mantenham ativas
@@ -27,40 +27,30 @@ void conectaMQTT();     //Faz conexão com Broker MQTT
 void enviaPacote();     //
 
 void setup() {
-
-
   pinMode(lr1, INPUT);
   pinMode(lr2, INPUT);
   pinMode(pot, INPUT);
   conectaWiFi();
   MQTT.setServer(BROKER_MQTT, BROKER_PORT);
   Serial.begin(9600);
-
 }
 int luz1, luz2, p;
 
 void loop() {
-  
 mantemConexoes();
-
 enviaValores();
  MQTT.loop();
-   
 }
 void mantemConexoes() {
   if (!MQTT.connected()) {
     conectaMQTT();
   }
-
   conectaWiFi(); //se não há conexão com o WiFI, a conexão é refeita
 }
-
 void conectaWiFi() {
-
   if (WiFi.status() == WL_CONNECTED) {
     return;
   }
-
   Serial.print("Conectando-se na rede: ");
   Serial.print(SSID);
   Serial.println("  Aguarde!");

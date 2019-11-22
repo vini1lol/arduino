@@ -25,8 +25,6 @@ void conectaMQTT();     //Faz conexão com Broker MQTT
 void enviaPacote();     //
 
 
-String json[] = {"casa","12"};
-
 void setup() {
   Serial.begin(9600);
   pinMode(s1,OUTPUT);
@@ -144,6 +142,3 @@ void exc(String l1,String l2,int f1,int f2){
       }
   
 }
-
-
-
